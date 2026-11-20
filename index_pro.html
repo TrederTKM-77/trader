@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="tk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TRADER</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#060a12;--sf:rgba(255,255,255,.05);--ln:rgba(255,255,255,.09);--tx:#eaf0ff;--mu:#7f8cab;--up:#22d39a;--dn:#ff5d73;--wt:#f5b94b;--a:#4f8cff;--b:#9a6bff;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+background:radial-gradient(800px 420px at 100% -5%,rgba(154,107,255,.25),transparent 60%),radial-gradient(800px 420px at -10% 0%,rgba(79,140,255,.25),transparent 55%),var(--bg);
+padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(110px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:520px;margin:0 auto}
+header{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:20px;box-shadow:0 8px 22px rgba(79,140,255,.4)}
+h1{font-size:19px;margin:0;letter-spacing:.08em}
+.sub{font-size:11px;color:var(--mu);margin-top:1px}
+.live{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--up);display:flex;align-items:center;gap:6px;background:rgba(34,211,154,.1);padding:6px 10px;border-radius:99px}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--up);animation:pl 1.6s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(34,211,154,.7)}100%{box-shadow:0 0 0 8px rgba(34,211,154,0)}}
+.cats{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none}
+.cats button{flex:none;border:0;background:transparent;color:var(--mu);font:700 12px system-ui,sans-serif;letter-spacing:.04em;padding:7px 10px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.cats button.on{color:#fff;background:var(--sf);box-shadow:inset 0 0 0 1px var(--ln)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:146px;overflow-y:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:700 13px system-ui,sans-serif;padding:8px 12px;border-radius:11px;cursor:pointer}
+.chip.on{border-color:transparent;color:#fff;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 6px 18px rgba(100,110,255,.4)}
+.card{margin-top:12px;border:1px solid var(--ln);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:20px;padding:14px;backdrop-filter:blur(8px)}
+.ct{display:flex;justify-content:space-between;align-items:flex-start}
+.pn{font-size:13px;color:var(--mu);font-weight:700;letter-spacing:.08em}
+.pr{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+.chg{font-size:12px;font-weight:800;padding:5px 9px;border-radius:99px;margin-top:4px}
+.chg.up{color:var(--up);background:rgba(34,211,154,.12)}.chg.dn{color:var(--dn);background:rgba(255,93,115,.12)}
+.tfs{display:flex;gap:4px;margin:12px 0 8px;background:rgba(0,0,0,.25);border-radius:12px;padding:3px}
+.tfs button{flex:1;border:0;background:transparent;color:var(--mu);font:700 13px system-ui,sans-serif;padding:8px 0;border-radius:9px;cursor:pointer}
+.tfs button.on{color:#fff;background:linear-gradient(135deg,var(--a),var(--b))}
+svg.cv{width:100%;height:auto;display:block;transition:opacity .25s}
+.ld svg.cv{opacity:.35}
+.msg{font-size:11px;color:var(--mu);text-align:center;margin-top:6px;min-height:14px}
+.msg.e{color:var(--dn)}
+.gauge{text-align:center;padding-bottom:16px}
+.gauge svg{width:78%;max-width:300px;display:block;margin:0 auto}
+.gt{font-size:11px;letter-spacing:.14em;color:var(--mu);font-weight:800;text-align:left}
+.gv{font-size:30px;font-weight:900;margin-top:-4px}
+.gs{font-size:12px;color:var(--mu);margin-top:3px}
+.up{--c:var(--up)}.dn{--c:var(--dn)}.wt{--c:var(--wt)}
+.gv{color:var(--c,var(--mu))}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ic{border:1px solid var(--ln);background:var(--sf);border-radius:16px;padding:12px;position:relative;overflow:hidden}
+.ic:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.ic .n{font-size:10px;letter-spacing:.14em;color:var(--mu);font-weight:800}
+.ic .v{font-size:18px;font-weight:800;color:var(--c);margin-top:6px}
+.ic .s{font-size:12px;color:var(--mu);margin-top:2px}
+.rb{height:5px;border-radius:3px;margin-top:8px;background:linear-gradient(90deg,var(--up),var(--wt) 50%,var(--dn));position:relative}
+.rb i{position:absolute;top:-3px;width:3px;height:11px;border-radius:2px;background:#fff;box-shadow:0 0 6px #fff}
+.foot{text-align:center;color:var(--mu);font-size:11px;line-height:1.5;margin:16px 8px 0}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent,var(--bg) 35%);display:flex;gap:10px;align-items:center}
+.pill{flex:1;border-radius:18px;padding:12px 16px;border:1.5px solid var(--c,var(--ln));background:rgba(8,12,20,.9);box-shadow:0 0 28px color-mix(in srgb,var(--c,transparent) 40%,transparent);display:flex;align-items:center;gap:12px}
+.pill .ar{font-size:26px;color:var(--c,var(--mu))}
+.pill b{display:block;font-size:19px;color:var(--c,var(--tx));letter-spacing:.04em}
+.pill small{font-size:11px;color:var(--mu)}
+.rf{width:56px;height:56px;border-radius:50%;border:0;color:#fff;font-size:24px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 8px 22px rgba(100,110,255,.5);cursor:pointer}
+.rf.sp span{display:inline-block;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="logo">📈</div><div><h1>TRADER</h1><div class="sub">Tehniki analiz signaly · Minsk wagty</div></div><div class="live"><i></i>LIVE</div></header>
+  <div class="cats" id="cats"></div>
+  <div class="chips" id="chips"></div>
+  <section class="card" id="chart">
+    <div class="ct"><div><div class="pn" id="pn"></div><div class="pr" id="pr">—</div></div><div class="chg" id="chg"></div></div>
+    <div class="tfs" id="tfs"></div>
+    <svg class="cv" id="cv" viewBox="0 0 320 190"></svg>
+    <div class="msg" id="msg"></div>
+  </section>
+  <section class="card gauge" id="gauge">
+    <div class="gt">SIGNAL ÖLÇEGI</div>
+    <svg viewBox="0 0 200 122">
+      <defs><linearGradient id="gg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ff5d73"/><stop offset=".5" stop-color="#f5b94b"/><stop offset="1" stop-color="#22d39a"/></linearGradient></defs>
+      <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="16" stroke-linecap="round"/>
+      <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#gg)" stroke-width="9" stroke-linecap="round"/>
+      <g id="nd" style="transform-origin:100px 100px;transform:rotate(0deg);transition:transform .9s cubic-bezier(.2,1.3,.4,1)"><line x1="100" y1="100" x2="100" y2="32" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>
+      <circle cx="100" cy="100" r="7" fill="#0b111c" stroke="#fff" stroke-width="3"/>
+      <text x="20" y="118" font-size="9" font-weight="800" fill="#ff5d73" text-anchor="middle">DOWN</text>
+      <text x="180" y="118" font-size="9" font-weight="800" fill="#22d39a" text-anchor="middle">UP</text>
+    </svg>
+    <div class="gv" id="gv">—</div><div class="gs" id="gs"></div>
+  </section>
+  <div class="ig" id="ig"></div>
+  <p class="foot">⚠️ Bu maliýe maslahaty däl. Taryhy synagda hiç strategiýa ýitirmezlik çäginden (54.1%) ýokary çykmady.<br>Pocket Option bahasy bilen azajyk tapawut bolup biler, OTC goldanylmaýar.</p>
+</div>
+<div class="bar"><div class="pill" id="pill"><div class="ar">●</div><div><b>—</b><small>maglumat garaşylýar</small></div></div><button class="rf" id="rf"><span>⟳</span></button></div>
+<script>
+const MINSK=3,PAGE_FX="EURUSD GBPUSD USDJPY AUDUSD USDCAD USDCHF NZDUSD EURJPY GBPJPY EURGBP EURAUD EURCAD EURCHF EURNZD GBPAUD GBPCAD GBPCHF GBPNZD AUDCAD AUDCHF AUDJPY AUDNZD CADJPY CADCHF CHFJPY NZDJPY NZDCAD NZDCHF".split(" ");
+const CATN={fx:"💱 WALÝUTA",st:"📈 AKSIÝA",cr:"🪙 KRIPTA",mt:"🥇 METAL"};
+const PAIRS={
+  fx:PAGE_FX.map(p=>[p,p.slice(0,3)+"/"+p.slice(3)]),
+  st:[["AAPL","AAPL"],["MSFT","MSFT"],["GOOGL","GOOGL"],["AMZN","AMZN"],["TSLA","TSLA"],["NVDA","NVDA"],["META","META"],["NFLX","NFLX"],["AMD","AMD"],["INTC","INTC"],["BA","BA"],["JPM","JPM"],["V","V"],["DIS","DIS"],["KO","KO"],["MCD","MCD"],["NKE","NKE"],["PFE","PFE"],["XOM","XOM"],["BABA","BABA"],["COIN","COIN"],["PYPL","PYPL"],["UBER","UBER"],["WMT","WMT"]],
+  cr:[["BTCUSD","BTC/USD"],["ETHUSD","ETH/USD"],["LTCUSD","LTC/USD"],["XRPUSD","XRP/USD"],["SOLUSD","SOL/USD"],["BNBUSD","BNB/USD"],["DOGEUSD","DOGE/USD"],["ADAUSD","ADA/USD"],["AVAXUSD","AVAX/USD"],["LINKUSD","LINK/USD"],["DOTUSD","DOT/USD"],["TRXUSD","TRX/USD"]],
+  mt:[["GOLD","GOLD"],["SILVER","SILVER"],["PLATINUM","PLATINUM"],["PALLADIUM","PALLADIUM"],["COPPER","COPPER"]]
+};
+const YAHOO={GOLD:"GC=F",SILVER:"SI=F",PLATINUM:"PL=F",PALLADIUM:"PA=F",COPPER:"HG=F"};
+PAGE_FX.forEach(p=>YAHOO[p]=p+"=X");
+PAIRS.st.forEach(p=>YAHOO[p[0]]=p[0]);
+const BIN={};
+PAIRS.cr.forEach(p=>{const s=p[0].slice(0,-3);YAHOO[p[0]]=s+"-USD";BIN[p[0]]=s+"USDT";});
+const TFS={"1m":["1m","5d",60],"5m":["5m","5d",300],"15m":["15m","30d",900],"30m":["30m","30d",1800],"1h":["60m","60d",3600]};
+const HIST={C:"52%",E:"52%",F:"53%"},SN={C:"RSI 30/70",E:"RSI+Bollinger",F:"trend+yza çekilme"};
+const DAYS=["Duş","Siş","Çar","Pen","Ann","Şen","Ýek"];
+const $=id=>document.getElementById(id);
+const catOf=p=>Object.keys(PAIRS).find(c=>PAIRS[c].some(x=>x[0]===p))||"fx";
+
+/* ---- Bazar wagtlary (ABŞ DST hasaba alnýar) ---- */
+function nyDate(ts){const u=new Date(ts*1000),y=u.getUTCFullYear();
+  const nth=(m,n)=>{const wd=new Date(Date.UTC(y,m,1)).getUTCDay();return 1+((7-wd)%7)+7*(n-1);};
+  const s=Date.UTC(y,2,nth(2,2),7),e=Date.UTC(y,10,nth(10,1),6),t=u.getTime();
+  return new Date(t+((t>=s&&t<e)?-4:-5)*3600e3);}
+function mOpen(c,ts){
+  if(c==="cr")return true;
+  const d=nyDate(ts),wd=(d.getUTCDay()+6)%7,m=d.getUTCHours()*60+d.getUTCMinutes();
+  if(c==="st")return wd<5&&m>=570&&m<960;
+  if(wd===5)return false;
+  if(wd===6)return m>=(c==="fx"?1020:1080);
+  if(wd===4&&m>=1020)return false;
+  if(c==="mt"&&wd<=3&&m>=1020&&m<1080)return false;
+  return true;}
+function nextOpen(c){const n=Math.floor(Date.now()/300000)*300;
+  for(let k=1;k<8*24*12;k++){const t=n+k*300;if(mOpen(c,t)){const d=new Date((t+MINSK*3600)*1000);
+    return DAYS[(d.getUTCDay()+6)%7]+" "+("0"+d.getUTCHours()).slice(-2)+":"+("0"+d.getUTCMinutes()).slice(-2);}}
+  return "?";}
+const SESS={USD:[12,21],CAD:[12,21],EUR:[7,16],GBP:[7,16],CHF:[7,16],JPY:[0,9],AUD:[22,7],NZD:[21,6]};
+const inW=(h,a,b)=>a<b?(h>=a&&h<b):(h>=a||h<b);
+function sessScore(p){const h=new Date().getUTCHours();return [p.slice(0,3),p.slice(3)].filter(c=>SESS[c]&&inW(h,SESS[c][0],SESS[c][1])).length;}
+const nowS=()=>Date.now()/1000;
+const catsOrdered=()=>Object.keys(PAIRS).map((c,i)=>[c,i]).sort((a,b)=>(mOpen(a[0],nowS())?0:1)-(mOpen(b[0],nowS())?0:1)||a[1]-b[1]).map(x=>x[0]);
+const listOf=c=>c==="fx"?PAIRS.fx.map((x,i)=>[x,i]).sort((a,b)=>sessScore(b[0][0])-sessScore(a[0][0])||a[1]-b[1]).map(x=>x[0]):PAIRS[c];
+const clk=ts=>{const d=new Date((ts+MINSK*3600)*1000);return("0"+d.getUTCHours()).slice(-2)+":"+("0"+d.getUTCMinutes()).slice(-2);};
+
+let sel={pair:"EURUSD",tf:"5m",cat:"fx"},loading=false,rid=0,tm;
+try{const s=JSON.parse(localStorage.getItem("trader_sel4")||"null");if(s&&YAHOO[s.pair]&&TFS[s.tf])sel={pair:s.pair,tf:s.tf,cat:catOf(s.pair)};}catch(e){}
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor("#060a12");tg.setBackgroundColor("#060a12");}catch(e){}}
+const tap=()=>{try{tg.HapticFeedback.impactOccurred("light");}catch(e){}};
+const digits=p=>p>=1000?2:p>=100?3:5;
+const label=p=>{for(const c in PAIRS){const f=PAIRS[c].find(x=>x[0]===p);if(f)return f[1];}return p;};
+
+function render(){
+  const co=catsOrdered();
+  $("cats").innerHTML=co.map(c=>`<button class="${sel.cat===c?"on":""}" data-c="${c}">${mOpen(c,nowS())?CATN[c]:"🔒 "+CATN[c].split(" ")[1]}</button>`).join("");
+  $("chips").innerHTML=listOf(sel.cat).map(p=>`<button class="chip ${sel.pair===p[0]?"on":""}" data-p="${p[0]}">${p[1]}</button>`).join("");
+  $("tfs").innerHTML=Object.keys(TFS).map(t=>`<button class="${sel.tf===t?"on":""}" data-t="${t}">${t}</button>`).join("");
+  $("pn").textContent=label(sel.pair)+(mOpen(sel.cat,nowS())?"":" · 🔒 ÝAPYK");
+  try{localStorage.setItem("trader_sel4",JSON.stringify(sel));}catch(e){}
+}
+$("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(b){sel.cat=b.dataset.c;sel.pair=listOf(sel.cat)[0][0];tap();render();sched();}};
+$("chips").onclick=e=>{const b=e.target.closest("[data-p]");if(b){sel.pair=b.dataset.p;tap();render();sched();}};
+$("tfs").onclick=e=>{const b=e.target.closest("[data-t]");if(b){sel.tf=b.dataset.t;tap();render();sched();}};
+$("rf").onclick=()=>{tap();load();};
+const sched=()=>{clearTimeout(tm);tm=setTimeout(load,300);};
+
+function getJSON(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);
+  return fetch(u,{signal:c.signal}).then(r=>{clearTimeout(t);if(!r.ok)throw new Error("HTTP "+r.status);return r.json();});}
+function fetchCandles(pair,tf){
+  const tasks=[];
+  if(BIN[pair])tasks.push(()=>getJSON(`https://api.binance.com/api/v3/klines?symbol=${BIN[pair]}&interval=${tf}&limit=500`).then(d=>d.map(k=>({t:Math.floor(k[0]/1000),o:+k[1],h:+k[2],l:+k[3],c:+k[4]}))));
+  const y=`https://query1.finance.yahoo.com/v8/finance/chart/${YAHOO[pair]}?interval=${TFS[tf][0]}&range=${TFS[tf][1]}`;
+  const parse=d=>{const r=d.chart.result[0],q=r.indicators.quote[0],out=[];
+    q.close.forEach((c,i)=>{if(c!==null&&q.open[i]!==null)out.push({t:r.timestamp[i],o:q.open[i],h:q.high[i],l:q.low[i],c});});return out;};
+  [y,"https://corsproxy.io/?url="+encodeURIComponent(y),"https://api.allorigins.win/raw?url="+encodeURIComponent(y)].forEach(u=>tasks.push(()=>getJSON(u).then(parse)));
+  return tasks.reduce((p,t)=>p.catch(()=>t()),Promise.reject()).then(c=>{
+    const st=TFS[tf][2];
+    if(c&&c.length&&c[c.length-1].t+st>nowS()+1)c=c.slice(0,-1);   // entek ýapylmadyk şemi aýyr
+    if(!c||c.length<210)throw new Error("data");return c;});
+}
+
+const L=a=>a[a.length-1];
+function ema(v,s){const k=2/(s+1),o=[v[0]];for(let i=1;i<v.length;i++)o.push(v[i]*k+o[i-1]*(1-k));return o;}
+function rsiW(v,n){let g=0,l=0;for(let i=1;i<=n;i++){const d=v[i]-v[i-1];g+=Math.max(d,0);l+=Math.max(-d,0);}
+  let ag=g/n,al=l/n;for(let i=n+1;i<v.length;i++){const d=v[i]-v[i-1];ag=(ag*(n-1)+Math.max(d,0))/n;al=(al*(n-1)+Math.max(-d,0))/n;}
+  return al===0?100:100-100/(1+ag/al);}
+/* backtest.py bilen birmeňzeş strategiýalar: C=RSI, E=RSI+Bollinger, F=trend+yza çekilme */
+function analyze(c){
+  const price=L(c),rs=rsiW(c,14),up=L(ema(c,50))>L(ema(c,200)),dn=L(ema(c,50))<L(ema(c,200));
+  const w=c.slice(-20),m=w.reduce((a,b)=>a+b,0)/20,sd=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/19),bu=m+2*sd,bl=m-2*sd;
+  const sg={C:rs<30?1:rs>70?-1:0,E:(rs<30&&price<bl)?1:(rs>70&&price>bu)?-1:0,F:(up&&rs<40)?1:(dn&&rs>60)?-1:0};
+  const fired=Object.keys(sg).filter(k=>sg[k]),dir=fired.length?sg[fired[0]]:0;
+  return{price,rs,up,dn,bb:price>bu?1:price<bl?-1:0,fired,dir};
+}
+function chart(cs){
+  const s=cs.slice(-45),W=320,H=190,pl=46,pw=W-pl,tp=10,bt=10,d=digits(L(s).c);
+  const mn=Math.min(...s.map(k=>k.l)),mx=Math.max(...s.map(k=>k.h)),rg=(mx-mn)||1e-9;
+  const y=v=>tp+(mx-v)/rg*(H-tp-bt),st=pw/s.length,bw=Math.max(2,st*.6);let g="";
+  for(let i=0;i<4;i++){const v=mx-rg*i/3,yy=y(v);g+=`<line x1="0" x2="${pw}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.06)"/><text x="${W-2}" y="${yy+3}" text-anchor="end" font-size="8.5" fill="#6f7c99">${v.toFixed(d)}</text>`;}
+  s.forEach((k,i)=>{const x=(i+.5)*st,col=k.c>=k.o?"#22d39a":"#ff5d73";
+    g+=`<line x1="${x}" x2="${x}" y1="${y(k.h)}" y2="${y(k.l)}" stroke="${col}" stroke-width="1.2"/><rect x="${x-bw/2}" y="${y(Math.max(k.o,k.c))}" width="${bw}" height="${Math.max(1.2,Math.abs(y(k.o)-y(k.c)))}" fill="${col}" rx=".6"/>`;});
+  const la=L(s),ly=y(la.c),lc=la.c>=la.o?"#22d39a":"#ff5d73";
+  g+=`<line x1="0" x2="${pw}" y1="${ly}" y2="${ly}" stroke="${lc}" stroke-dasharray="3 3" opacity=".8"/><rect x="${pw}" y="${ly-7}" width="${pl}" height="14" rx="3" fill="${lc}"/><text x="${pw+pl/2}" y="${ly+3}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#06130e">${la.c.toFixed(d)}</text>`;
+  $("cv").innerHTML=g;
+  const ch=(la.c-s[0].o)/s[0].o*100;
+  $("pr").textContent=la.c.toFixed(d);
+  $("chg").className="chg "+(ch>=0?"up":"dn");
+  $("chg").textContent=(ch>=0?"▲ +":"▼ ")+ch.toFixed(2)+"%";
+}
+function setGauge(cls,rot,gv,gs,pa,pb,ps){
+  $("nd").style.transform=`rotate(${rot}deg)`;
+  $("gauge").className="card gauge "+cls;
+  $("gv").textContent=gv;$("gs").textContent=gs;
+  $("pill").className="pill "+cls;
+  $("pill").innerHTML=`<div class="ar">${pa}</div><div><b>${pb}</b><small>${ps}</small></div>`;
+}
+function show(cs){
+  chart(cs);
+  const step=TFS[sel.tf][2],age=nowS()-(L(cs).t+step),late=age>Math.max(20,.3*step);
+  const n=nowS(),tm=clk(n)+" (Minsk)";
+  $("msg").className="msg";
+  if(!mOpen(sel.cat,n)){
+    setGauge("wt",0,"BAZAR ÝAPYK","Açylýar: "+nextOpen(sel.cat)+" (Minsk)","🔒","ÝAPYK",label(sel.pair)+" · "+sel.tf);
+    $("ig").innerHTML="";$("msg").textContent="Täzelendi "+tm+" · signal berilmeýär";return;}
+  if(age>Math.max(3*step,300)){
+    setGauge("wt",0,"MAGLUMAT KÖNE","Bazar ýapyk ýa-da baýramçylyk bolup biler","●","KÖNE",label(sel.pair)+" · "+sel.tf);
+    $("ig").innerHTML="";$("msg").textContent="Täzelendi "+tm;return;}
+  const a=analyze(cs.map(k=>k.c)),k=a.fired.length,cls=a.dir>0?"up":a.dir<0?"dn":"wt";
+  const T={up:["▲","UP","Ýokary"],dn:["▼","DOWN","Aşak"],wt:["●","GARAŞ","Signal ýok"]}[cls];
+  const why=k?a.fired.join("+")+" · "+(late?"giç: şem "+Math.round(age)+" sek ozal ýapyldy":"indi gir"):"şert ýok (RSI 30/70 ýa-da trend bilen 40/60)";
+  setGauge(cls,a.dir*k*27,T[1]+" · "+T[2],"Güýç "+k+"/3 · "+why,T[0],T[1],label(sel.pair)+" · "+sel.tf+" · güýç "+k+"/3");
+  const cards=[
+    {n:"TREND",v:a.up?"▲ Ýokary":a.dn?"▼ Aşak":"—",s:a.up?"EMA50 > EMA200":a.dn?"EMA50 < EMA200":"deň",d:a.up?1:a.dn?-1:0},
+    {n:"RSI",v:a.rs.toFixed(0),s:a.rs<30?"aşa satylan":a.rs>70?"aşa alnan":"neýtral",d:a.rs<30?1:a.rs>70?-1:0,rs:a.rs},
+    {n:"BOLLINGER",v:a.bb>0?"Ýokarda":a.bb<0?"Aşakda":"Içinde",s:a.bb>0?"ýokarky çäkden ýokary":a.bb<0?"aşaky çäkden aşak":"çäkleriň içinde",d:a.bb<0?1:a.bb>0?-1:0},
+    {n:"STRATEGIÝA",v:k?a.fired.join(" + "):"Ýok",s:k?a.fired.map(x=>SN[x]+" ~"+HIST[x]).join(", "):"taryhy: C 52% E 52% F 53%",d:a.dir}];
+  $("ig").innerHTML=cards.map(x=>`<div class="ic ${x.d>0?"up":x.d<0?"dn":"wt"}"><div class="n">${x.n}</div><div class="v">${x.v}</div><div class="s">${x.s}</div>${x.rs!==undefined?`<div class="rb"><i style="left:calc(${x.rs.toFixed(0)}% - 1px)"></i></div>`:""}</div>`).join("");
+  $("msg").textContent="Täzelendi "+tm+" · 45 şem";
+}
+function load(){
+  const id=++rid;loading=true;$("chart").classList.add("ld");$("rf").classList.add("sp");
+  fetchCandles(sel.pair,sel.tf).then(c=>{if(id===rid)show(c);}).catch(()=>{if(id===rid){$("msg").className="msg e";$("msg").textContent="Maglumat alnyp bilmedi. Täzeden bas. Bazar ýapyk bolup biler.";}})
+    .then(()=>{if(id===rid){loading=false;$("chart").classList.remove("ld");$("rf").classList.remove("sp");}});
+}
+setInterval(()=>{if(!document.hidden&&!loading)load();},45000);
+render();load();
+</script>
+</body>
+</html>
